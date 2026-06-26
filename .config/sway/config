@@ -1,0 +1,173 @@
+# Sway config with BSPWM-style bindings (Alt-centric)
+
+### --- Monitors ---
+output DP-2 pos 941 2760
+output DP-1 pos 2861 2548
+output HDMI-A-1 pos 6301 2699
+
+### --- Workspaces ---
+workspace 1 output DP-2
+workspace 2 output DP-2
+workspace 3 output DP-2
+
+workspace 4 output DP-1
+workspace 5 output DP-1
+workspace 6 output DP-1
+
+workspace 7 output HDMI-A-1
+workspace 8 output HDMI-A-1
+workspace 9 output HDMI-A-1
+
+### --- Static Workspace Assignments ---
+assign [class="discord"] workspace 1
+
+### -- Behavior Overrides ---
+#for_window [app_id="firefox" title="^Picture-in-Picture$"] floating enable
+#for_window [app_id="firefox" title="^Picture-in-Picture$"] move position 2500 1300
+
+for_window [app_id="firefox" title="^Picture-in-Picture$"] floating enable, resize set 480 270, move position 2932 1114
+for_window [instance="ffxiv_dx11.exe" class="ffxiv_dx11.exe" title="FINAL FANTASY XIV"] floating enable, fullscreen enable
+
+exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+# exec_always dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec_always dbus-update-activation-environment --systemd \
+  DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway XDG_SESSION_TYPE=wayland
+
+### --- Decorative settings ---
+gaps inner 12
+gaps outer 0
+blur enable
+blur_xray disable
+
+corner_radius 7
+
+shadows enable
+
+default_dim_inactive 0.1
+
+#### --- Vanilla Sway ----
+#default_border none
+default_border pixel 3
+
+client.focused #000000 #000000 #000000
+client.unfocused #808080 #808080 #808080
+
+### --- Variables / modifiers ---
+set $mod Mod1
+set $super Mod4
+
+set $term terminator
+
+### --- Launcher/Lock via Noctalia IPC ---
+set $launcher qs -c noctalia-shell ipc call launcher toggle	
+set $lockScreen qs -c noctalia-shell ipc call lockScreen lock
+
+### --- Basic behavior ---
+floating_modifier $mod normal
+
+### --- Application hotkeys ---
+bindsym $mod+Return exec $term
+bindsym $super+d exec $launcher
+bindsym $super+l exec $lockScreen
+
+### --- Screenshot handling (requires: grim slurp wl-clipboard) ---
+bindsym Print exec sh -c 'grim -g "$(slurp)" - | wl-copy --type image/png'
+
+### --- System hotkeys ---
+bindsym $mod+Escape reload
+bindsym $super+Escape exec swaymsg exit
+
+### --- Alt + keys (BSPWM-ish) ---
+bindsym $mod+f fullscreen toggle
+
+# Swap: mark a target then swap with it
+bindsym $mod+Shift+g mark --add swap_target
+bindsym $mod+g swap container with mark swap_target
+
+bindsym $mod+p focus parent
+
+# Scratchpad hide/show
+bindsym $mod+y move to scratchpad
+bindsym $mod+Shift+y scratchpad show
+
+# Workspace prev/next
+bindsym $mod+bracketleft workspace prev
+bindsym $mod+bracketright workspace next
+
+### --- Window management ---
+bindsym $mod+Shift+q kill
+
+# Floating state
+bindsym $mod+t floating disable
+bindsym $mod+Shift+t floating enable
+
+# BSPWM "hidden flag" equivalent (KEEP THIS)
+bindsym $mod+$super+h move to scratchpad
+
+### --- Focus / move in directions ---
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+### --- Workspaces ---
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+
+### --- Sway-Native Presets ---
+# Split direction on Alt+Super+Control + h/j/k/l
+bindsym $mod+$super+Control+h splith
+bindsym $mod+$super+Control+l splith
+bindsym $mod+$super+Control+k splitv
+bindsym $mod+$super+Control+j splitv
+
+# Toggle split orientation
+bindsym $mod+$super+space split toggle
+
+# Toggle floating
+bindsym $mod+Shift+space floating toggle
+
+### --- Resize / move floating ---
+# Expand (Shift+Super+arrows)
+bindsym $super+Shift+Left  resize grow   width  20
+bindsym $super+Shift+Right resize shrink width  20
+bindsym $super+Shift+Up    resize shrink height 20
+bindsym $super+Shift+Down  resize grow   height 20
+
+# Contract (Alt+Shift+Super+arrows)
+bindsym $mod+$super+Shift+Left  resize shrink width  20
+bindsym $mod+$super+Shift+Right resize grow   width  20
+bindsym $mod+$super+Shift+Up    resize grow   height 20
+bindsym $mod+$super+Shift+Down  resize shrink height 20
+
+# Move floating (Alt+Super+arrows) with px unit
+bindsym $mod+$super+Left  move left  20 px
+bindsym $mod+$super+Right move right 20 px
+bindsym $mod+$super+Up    move up    20 px
+bindsym $mod+$super+Down  move down  20 px
+
+### --- Noctalia-specific Items ---
+exec quickshell -c noctalia-shell
+include ~/.config/sway/noctalia
