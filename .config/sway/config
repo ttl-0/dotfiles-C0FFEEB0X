@@ -22,11 +22,14 @@ workspace 9 output HDMI-A-1
 assign [class="discord"] workspace 1
 
 ### -- Behavior Overrides ---
-#for_window [app_id="firefox" title="^Picture-in-Picture$"] floating enable
-#for_window [app_id="firefox" title="^Picture-in-Picture$"] move position 2500 1300
-
 for_window [app_id="firefox" title="^Picture-in-Picture$"] floating enable, resize set 480 270, move position 2932 1114
 for_window [instance="ffxiv_dx11.exe" class="ffxiv_dx11.exe" title="FINAL FANTASY XIV"] floating enable, fullscreen enable
+
+# Match the Godot window with no title (name=null) — the splash/project manager
+for_window [class="Godot" title="^$"] <your command for the null-title window>
+
+# Your existing rule for all OTHER Godot windows (titles that aren't "Godot Engine")
+for_window [class="Godot" title="^(?!.*Godot Engine$).*$"] floating enable, resize set 1200 px 1000 px, move position center
 
 exec_always systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 # exec_always dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
@@ -59,8 +62,9 @@ set $super Mod4
 set $term terminator
 
 ### --- Launcher/Lock via Noctalia IPC ---
-set $launcher qs -c noctalia-shell ipc call launcher toggle	
-set $lockScreen qs -c noctalia-shell ipc call lockScreen lock
+set $ipc noctalia msg
+set $launcher $ipc panel-toggle launcher
+set $lockScreen $ipc session lock
 
 ### --- Basic behavior ---
 floating_modifier $mod normal
@@ -169,5 +173,6 @@ bindsym $mod+$super+Up    move up    20 px
 bindsym $mod+$super+Down  move down  20 px
 
 ### --- Noctalia-specific Items ---
-exec quickshell -c noctalia-shell
+exec noctalia
+
 include ~/.config/sway/noctalia
